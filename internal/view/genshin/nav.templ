@@ -1,0 +1,30 @@
+package genshin
+
+import "github.com/dotcchix/gonshin/internal/style"
+
+templ Nav(active string, attrs templ.Attributes) {
+	<nav
+		id="gen-nav"
+		class="mb-6 flex gap-1 overflow-x-auto border-b border-border/30 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
+		{ attrs... }
+	>
+		for _, tab := range Tabs {
+			<button
+				type="button"
+				hx-get={ "/tabs/" + tab.ID }
+				hx-target="#gen-tab-content"
+				hx-swap="innerHTML"
+				class={ style.CN("flex shrink-0 items-center gap-2 px-4 py-2 font-mono text-sm whitespace-nowrap transition-colors", navActiveClass(active == tab.ID)) }
+			>
+				<img
+					src={ tab.Icon }
+					alt={ tab.Label }
+					width="20"
+					height="20"
+					class="h-5 w-5 object-contain"
+				/>
+				{ tab.Label }
+			</button>
+		}
+	</nav>
+}

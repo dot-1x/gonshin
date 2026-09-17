@@ -1,0 +1,24 @@
+package genshin
+
+import (
+	"github.com/dotcchix/gonshin/internal/hoyolab"
+	"github.com/dotcchix/gonshin/internal/view/ui"
+)
+
+templ StatsRow(info *hoyolab.AccountInfo) {
+	<div class="grid grid-cols-2 gap-4 sm:grid-cols-4">
+		for _, s := range newStatItems(info) {
+			@ui.Card("border-border/50 bg-card py-0 backdrop-blur-sm", nil) {
+				@ui.CardContent("px-4 py-3") {
+					<div class="flex items-center gap-3">
+						@s.icon
+						<div class="min-w-0">
+							<div class="truncate text-base font-bold text-foreground">{ s.value }</div>
+							<div class="truncate text-xs text-muted-foreground">{ s.label }</div>
+						</div>
+					</div>
+				}
+			}
+		}
+	</div>
+}

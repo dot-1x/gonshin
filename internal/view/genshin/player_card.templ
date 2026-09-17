@@ -1,0 +1,54 @@
+package genshin
+
+import (
+	"strconv"
+
+	"github.com/dotcchix/gonshin/internal/hoyolab"
+	"github.com/dotcchix/gonshin/internal/view/ui"
+)
+
+templ PlayerCard(info *hoyolab.AccountInfo) {
+	{{ nickname := "dotcchix" }}
+	{{ ar := 60 }}
+	{{ uid := "—" }}
+	{{ headIcon := "" }}
+	if info != nil {
+		if info.Nickname != "" {
+			{{ nickname = info.Nickname }}
+		}
+		if info.Level != 0 {
+			{{ ar = info.Level }}
+		}
+		if info.UID != 0 {
+			{{ uid = strconv.Itoa(info.UID) }}
+		}
+		{{ headIcon = info.GameHeadIcon }}
+	}
+	@ui.Card("border-border/50 bg-card backdrop-blur-sm", nil) {
+		@ui.CardContent("pt-6") {
+			<div class="flex flex-col items-center gap-4 sm:flex-row sm:gap-6">
+				@ui.Avatar("h-32 w-32 border-2 border-primary") {
+					if headIcon != "" {
+						@ui.AvatarImage(headIcon, nickname, "")
+					} else {
+						@ui.AvatarFallback("bg-muted") {
+							@ui.IconSparkles("h-12 w-12 text-primary")
+						}
+					}
+				}
+
+				<div class="flex-1 text-center sm:text-left">
+					<h2 class="text-2xl font-bold text-foreground">{ nickname }</h2>
+					<div class="mt-3 flex flex-wrap justify-center gap-2 sm:justify-start">
+						@ui.Badge("secondary", "font-mono text-xs", nil) {
+							AR { ar }
+						}
+						@ui.Badge("outline", "font-mono text-xs", nil) {
+							UID { uid }
+						}
+					</div>
+				</div>
+			</div>
+		}
+	}
+}
