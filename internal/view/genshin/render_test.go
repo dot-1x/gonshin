@@ -184,3 +184,76 @@ func TestCharacterRowUnknown(t *testing.T) {
 		t.Errorf("expected em dash placeholders for missing weapon/stats")
 	}
 }
+
+func TestStygianOnslaughtSection(t *testing.T) {
+	html := render(t, StygianOnslaughtSection(accountStygian, 0))
+	for _, want := range []string{
+		"Stygian Onslaught",
+		"Season One",
+		"Fearless",
+		"180s",
+		"Total Clear Time",
+		"First Half",
+		"Furina",
+		"Golden Troupe x4",
+		"MAX HP",
+		"40000",
+		"90s",
+	} {
+		if !strings.Contains(html, want) {
+			t.Errorf("StygianOnslaughtSection missing %q", want)
+		}
+	}
+	if strings.Contains(html, `hx-get="/stygian?cycle=`) {
+		t.Errorf("single cycle should not render a cycle selector")
+	}
+}
+
+func TestStygianCycleSelector(t *testing.T) {
+	multi := &hoyolab.AccountStygian{Cycles: []hoyolab.StygianCycle{
+		{Name: "One", Difficulty: 6, TotalClearTime: 100},
+		{Name: "Two", Difficulty: 5, TotalClearTime: 200},
+	}}
+	html := render(t, StygianOnslaughtSection(multi, 1))
+	if !strings.Contains(html, `hx-get="/stygian?cycle=0"`) || !strings.Contains(html, `hx-get="/stygian?cycle=1"`) {
+		t.Errorf("expected cycle selector URLs")
+	}
+	if !strings.Contains(html, "Two") || !strings.Contains(html, "200s") {
+		t.Errorf("expected selected cycle content")
+	}
+	if strings.Count(html, "border-primary/60 bg-primary/10 text-foreground") != 1 {
+		t.Errorf("expected exactly one active cycle")
+	}
+}
+
+func TestStygianEmpty(t *testing.T) {
+	html := render(t, StygianOnslaughtSection(nil, 0))
+	if !strings.Contains(html, "No Stygian Onslaught records available.") {
+		t.Errorf("expected empty state")
+	}
+}
+
+func TestImaginariumTheaterSection(t *testing.T) {
+	html := render(t, ImaginariumTheaterSection(accountTheater))
+	for _, want := range []string{
+		"Imaginarium Theater",
+		"Suli Could Never",
+		"2 / 3",
+		"Acts Cleared",
+		"Medals across acts",
+		"Furina",
+		"Yanfei",
+		"fill-primary",
+	} {
+		if !strings.Contains(html, want) {
+			t.Errorf("ImaginariumTheaterSection missing %q", want)
+		}
+	}
+}
+
+func TestImaginariumTheaterEmpty(t *testing.T) {
+	html := render(t, ImaginariumTheaterSection(nil))
+	if !strings.Contains(html, "No Imaginarium Theater records available.") {
+		t.Errorf("expected empty state")
+	}
+}

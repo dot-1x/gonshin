@@ -1,0 +1,100 @@
+package genshin
+
+import (
+	"strconv"
+
+	"github.com/dotcchix/gonshin/internal/hoyolab"
+	"github.com/dotcchix/gonshin/internal/view/ui"
+)
+
+templ ImaginariumTheaterSection(theater *hoyolab.AccountTheater) {
+	<section class="space-y-4">
+		@ui.Card("border-border/50 bg-card backdrop-blur-sm", nil) {
+			@ui.CardHeader("") {
+				@ui.CardTitle("flex items-center gap-2 font-mono text-base text-secondary") {
+					<img
+						src="/static/genshin/Imaginarium_Theater.webp"
+						alt="Imaginarium Theater"
+						width="16"
+						height="16"
+						class="h-4 w-4 object-contain"
+					/>
+					Imaginarium Theater
+				}
+				<p class="font-mono text-[0.65rem] italic text-muted-foreground/60">Suli Could Never</p>
+			}
+		}
+		if theater == nil {
+			@ui.Card("border-border/50 bg-card backdrop-blur-sm", nil) {
+				<p class="px-6 py-4 text-center text-sm text-muted-foreground">No Imaginarium Theater records available.</p>
+			}
+		} else {
+			{{ earnedStars := 0 }}
+			for _, m := range theater.Medal {
+				{{ earnedStars += m }}
+			}
+			{{ totalActs := len(theater.Medal) }}
+			{{ starsValue := strconv.Itoa(earnedStars) + " / " + strconv.Itoa(totalActs) }}
+
+			@ui.Card("border-border/50 bg-card backdrop-blur-sm", nil) {
+				@ui.CardContent("px-0") {
+					<div class="grid grid-cols-1 divide-y divide-border/30 sm:grid-cols-2 sm:divide-x sm:divide-y-0">
+						@TheaterStat("Stars Earned", starsValue, "Medals across acts", true)
+						@TheaterStat("Acts Cleared", strconv.Itoa(totalActs), "Total acts in run", false)
+					</div>
+
+					<div class="flex flex-wrap justify-center gap-1.5 px-6 pb-4 pt-2">
+						for _, m := range theater.Medal {
+							@ui.IconStar(activeClass(m != 0, "h-4 w-4 fill-primary text-primary", "h-4 w-4 text-muted-foreground/40"))
+						}
+					</div>
+				}
+			}
+
+			if len(theater.Characters) > 0 {
+				@ui.Card("border-border/50 bg-card py-0 backdrop-blur-sm", nil) {
+					@ui.CardContent("px-0") {
+						<div class="grid grid-cols-2 gap-3 p-4 sm:grid-cols-3">
+							for _, char := range theater.Characters {
+								{{ color := colorOf(&char.Element) }}
+								<div class="flex items-center gap-3">
+									<div class="relative h-12 w-12 shrink-0 overflow-hidden rounded-lg border border-border/50 bg-muted">
+										<img
+											src={ char.Avatar }
+											alt={ char.Name }
+											class="absolute inset-0 h-full w-full object-cover"
+											sizes="48px"
+										/>
+										@elementDot(&char.Element, "absolute left-1 top-1 h-2 w-2 rounded-full ring-2 ring-background")
+									</div>
+									<div class="min-w-0">
+										<p class="truncate text-xs font-semibold text-foreground">{ char.Name }</p>
+										<div class="flex items-center gap-2 text-[0.65rem] text-muted-foreground">
+											if color != "" {
+												<span style={ color }>{ string(char.Element) }</span>
+											}
+											<span>{ lv(char.Level) }</span>
+										</div>
+									</div>
+								</div>
+							}
+						</div>
+					}
+				}
+			}
+		}
+	</section>
+}
+
+templ TheaterStat(label string, value string, hint string, icon bool) {
+	<div class="px-6 py-6 text-center">
+		<div class="text-xs uppercase tracking-wider text-muted-foreground">{ label }</div>
+		<div class="mt-2 flex items-center justify-center gap-1 text-2xl font-bold text-foreground">
+			if icon {
+				@ui.IconStar("h-5 w-5 text-primary")
+			}
+			{ value }
+		</div>
+		<div class="mt-1 text-xs text-muted-foreground">{ hint }</div>
+	</div>
+}

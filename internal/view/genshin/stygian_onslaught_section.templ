@@ -1,0 +1,98 @@
+package genshin
+
+import (
+	"github.com/dotcchix/gonshin/internal/hoyolab"
+	"github.com/dotcchix/gonshin/internal/style"
+	"github.com/dotcchix/gonshin/internal/view/ui"
+)
+
+templ StygianOnslaughtSection(stygian *hoyolab.AccountStygian, cycleIdx int) {
+	<section class="space-y-4">
+		@ui.Card("border-border/50 bg-card backdrop-blur-sm", nil) {
+			@ui.CardHeader("") {
+				@ui.CardTitle("flex items-center gap-2 font-mono text-base text-secondary") {
+					<img src="/static/genshin/stygian.png" alt="Stygian Onslaught" width="20" height="20" class="h-5 w-5 object-contain" />
+					Stygian Onslaught
+				}
+			}
+		}
+		if stygian == nil || len(stygian.Cycles) == 0 {
+			@ui.Card("border-border/50 bg-card backdrop-blur-sm", nil) {
+				<p class="px-6 py-4 text-center text-sm text-muted-foreground">No Stygian Onslaught records available.</p>
+			}
+		} else {
+			<div id="stygian-panel" class="space-y-4">
+				@StygianPanel(stygian, cycleIdx)
+			</div>
+		}
+	</section>
+}
+
+templ StygianPanel(stygian *hoyolab.AccountStygian, cycleIdx int) {
+	{{ idx := clampCycle(cycleIdx, len(stygian.Cycles)) }}
+	{{ cycle := stygian.Cycles[idx] }}
+	{{ difficulty := StygianDifficultyLabel(cycle.Difficulty) }}
+	{{ clearImage := StygianClearImage(cycle.Difficulty) }}
+
+	if len(stygian.Cycles) > 1 {
+		<div class="flex flex-wrap gap-2">
+			for i, c := range stygian.Cycles {
+				<button
+					type="button"
+					hx-get={ stygianTarget(i) }
+					hx-target="#stygian-panel"
+					hx-swap="innerHTML"
+					class={ style.CN(
+						"rounded-full border px-3 py-1.5 font-mono text-xs transition-colors",
+						activeClass(i == idx, "border-primary/60 bg-primary/10 text-foreground", "border-border/50 bg-card/50 text-muted-foreground hover:text-foreground"),
+					) }
+				>
+					{ c.Name }
+				</button>
+			}
+		</div>
+	}
+
+	@ui.Card("overflow-hidden border-border/50 bg-card backdrop-blur-sm", nil) {
+		@ui.CardContent("p-0") {
+			<div class="flex flex-col items-center justify-between gap-4 sm:flex-row">
+				if clearImage != "" {
+					<div class="relative h-32 w-full sm:h-24 sm:w-24">
+						<img
+							src={ clearImage }
+							alt={ difficulty }
+							class="absolute inset-0 h-full w-full object-contain p-2"
+							sizes="(max-width: 640px) 100vw, 96px"
+						/>
+					</div>
+				}
+
+				@ui.Separator("horizontal", "bg-border/50 sm:hidden")
+
+				<div class="flex flex-1 flex-col items-center justify-center gap-4 p-6 sm:flex-row sm:gap-8">
+					<div class="flex items-center gap-3 text-center sm:text-left">
+						<div>
+							<div class="text-xs uppercase tracking-wider text-muted-foreground">{ cycle.Name }</div>
+							<div class="mt-1 text-2xl font-bold text-foreground">{ difficulty }</div>
+						</div>
+					</div>
+
+					@ui.Separator("vertical", "hidden h-12 bg-border/50 sm:block")
+
+					<div class="text-center sm:text-right">
+						<div>
+							<div class="text-xs uppercase tracking-wider text-muted-foreground">Total Clear Time</div>
+							<div class="mt-1 text-2xl font-bold text-foreground">{ FormatClearTimeN(cycle.TotalClearTime) }</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		}
+	}
+
+	<div class="space-y-4">
+		for i, team := range stygianTeams(cycle) {
+			@TeamCard(team, i == 0)
+		}
+	</div>
+}
