@@ -1,0 +1,68 @@
+package genshin
+
+import (
+	"github.com/dotcchix/gonshin/internal/hoyolab"
+	"github.com/dotcchix/gonshin/internal/view/ui"
+)
+
+templ SpiralAbyssSection(abyss *hoyolab.AccountAbyss, characters []hoyolab.AccountCharacter) {
+	if abyss == nil || len(abyss.Floors) == 0 {
+		<section class="space-y-4">
+			@ui.Card("border-border/50 bg-card backdrop-blur-sm", nil) {
+				@ui.CardHeader("") {
+					@ui.CardTitle("flex items-center gap-2 font-mono text-base text-secondary") {
+						<img src="/static/genshin/spiral.webp" alt="Spiral Abyss" width="20" height="20" class="h-5 w-5 object-contain" />
+						Spiral Abyss
+					}
+				}
+			}
+			@ui.Card("border-border/50 bg-card backdrop-blur-sm", nil) {
+				<p class="px-6 py-4 text-center text-sm text-muted-foreground">No Spiral Abyss records available.</p>
+			}
+		</section>
+	} else {
+		{{ index := hoyolab.BuildCharacterIndex(characters) }}
+		{{ floor := abyss.Floors[len(abyss.Floors)-1] }}
+		<section class="space-y-4">
+			@ui.Card("border-border/50 bg-card backdrop-blur-sm", nil) {
+				@ui.CardHeader("") {
+					@ui.CardTitle("flex items-center gap-2 font-mono text-base text-secondary") {
+						<img src="/static/genshin/spiral.webp" alt="Spiral Abyss" width="20" height="20" class="h-5 w-5 object-contain" />
+						Spiral Abyss
+					}
+					@ui.CardAction("") {
+						<div class="flex items-center gap-2">
+							@ui.Badge("outline", "font-mono text-xs", nil) {
+								Floor { abyss.MaxFloor }
+							}
+							@ui.Badge("secondary", "font-mono text-xs", nil) {
+								@ui.IconStar("h-3 w-3")
+								{ abyss.TotalStar }
+							}
+						</div>
+					}
+				}
+			}
+
+			<div class="space-y-6">
+				for _, level := range floor.Levels {
+					<div class="space-y-3">
+						<div class="flex items-center gap-3 px-1">
+							<h3 class="font-mono text-sm font-semibold text-foreground">Chamber { level.Chamber }</h3>
+							@ui.Separator("horizontal", "flex-1 bg-border/30")
+							@ui.Badge("outline", "font-mono text-xs", nil) {
+								@ui.IconStar("h-3 w-3")
+								{ level.Star }
+							}
+						</div>
+						<div class="space-y-3">
+							for i, team := range abyssTeams(level, index) {
+								@TeamCard(team, i == 0)
+							}
+						</div>
+					</div>
+				}
+			</div>
+		</section>
+	}
+}

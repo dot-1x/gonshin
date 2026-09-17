@@ -7,6 +7,8 @@ import (
 	"testing"
 
 	"github.com/a-h/templ"
+
+	"github.com/dotcchix/gonshin/internal/hoyolab"
 )
 
 func render(t *testing.T, c templ.Component) string {
@@ -140,5 +142,45 @@ func TestCharacterDialogStates(t *testing.T) {
 	loadHTML := render(t, CharacterDialogLoading("Venti"))
 	if !strings.Contains(loadHTML, "Loading Venti...") || !strings.Contains(loadHTML, "animate-spin") {
 		t.Errorf("loading dialog malformed")
+	}
+}
+
+func TestSpiralAbyssSection(t *testing.T) {
+	html := render(t, SpiralAbyssSection(accountAbyss, accountCharacters))
+	for _, want := range []string{
+		"Spiral Abyss",
+		"Floor 12-3",
+		"Chamber 1",
+		"First Half",
+		"Second Half",
+		"Venti",
+		"Unknown",
+		`<details open`,
+		"group-open:rotate-180",
+		"Hydro",
+	} {
+		if !strings.Contains(html, want) {
+			t.Errorf("SpiralAbyssSection missing %q", want)
+		}
+	}
+	if strings.Contains(html, `<details open="false"`) {
+		t.Errorf("second team should not be open")
+	}
+}
+
+func TestSpiralAbyssEmpty(t *testing.T) {
+	html := render(t, SpiralAbyssSection(nil, nil))
+	if !strings.Contains(html, "No Spiral Abyss records available.") {
+		t.Errorf("expected empty state")
+	}
+}
+
+func TestCharacterRowUnknown(t *testing.T) {
+	html := render(t, CharacterRow(hoyolab.DisplayCharacter{Icon: "x.png", Name: "Unknown", Level: 70}))
+	if !strings.Contains(html, "Unknown") || !strings.Contains(html, "Lv.70") {
+		t.Errorf("unknown character row malformed")
+	}
+	if !strings.Contains(html, "—") {
+		t.Errorf("expected em dash placeholders for missing weapon/stats")
 	}
 }

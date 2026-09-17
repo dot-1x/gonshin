@@ -1,0 +1,103 @@
+package genshin
+
+import (
+	"github.com/dotcchix/gonshin/internal/hoyolab"
+	"github.com/dotcchix/gonshin/internal/style"
+	"github.com/dotcchix/gonshin/internal/view/ui"
+)
+
+templ CharacterRow(character hoyolab.DisplayCharacter) {
+	{{ color := colorOf(character.Element) }}
+	{{ sets := character.ArtifactSets }}
+	{{ hasStats := len(character.FinalStats) > 0 }}
+	{{ bonusLabel, bonusValue, hasBonus := elementBonus(character.FinalStats) }}
+	<div class="flex flex-col gap-3 px-5 py-4 sm:flex-row sm:items-center">
+		<div class="flex items-center gap-3 sm:w-44 sm:shrink-0">
+			<div class="relative h-14 w-14 shrink-0 overflow-hidden rounded-lg border border-border/50 bg-muted">
+				<img
+					src={ character.Icon }
+					alt={ character.Name }
+					class="absolute inset-0 h-full w-full object-cover"
+					sizes="56px"
+				/>
+				@elementDot(character.Element, "absolute left-1 top-1 h-2.5 w-2.5 rounded-full ring-2 ring-background")
+			</div>
+			<div class="min-w-0">
+				<p class="truncate text-sm font-semibold text-foreground">{ character.Name }</p>
+				<div class="mt-0.5 flex items-center gap-2 text-xs text-muted-foreground">
+					if character.Element != nil {
+						<span style={ color }>{ string(*character.Element) }</span>
+					}
+					<span>{ lv(character.Level) }</span>
+					if character.Constellation != nil {
+						<span class="text-primary">{ cLabel(*character.Constellation) }</span>
+					}
+				</div>
+			</div>
+		</div>
+
+		<div class="flex flex-1 flex-wrap items-stretch gap-2">
+			@DetailChip("Weapon", "min-w-[16rem] flex-1") {
+				if character.Weapon != nil {
+					<span class="flex items-center gap-2">
+						<img
+							src={ character.Weapon.Icon }
+							alt={ character.Weapon.Name }
+							width="28"
+							height="28"
+							class="h-7 w-7 shrink-0 object-contain"
+						/>
+						<span class="min-w-0 flex-1 truncate text-sm">{ character.Weapon.Name }</span>
+						@ui.Badge("secondary", "font-mono text-[0.6rem]", nil) {
+							{ lv(character.Weapon.Level) }
+						}
+					</span>
+				} else {
+					—
+				}
+			}
+
+			if len(sets) > 0 {
+				@DetailChip("Artifacts", "min-w-[12rem] flex-1") {
+					<div class="flex flex-col gap-0.5">
+						for _, set := range sets {
+							<span class="truncate text-[0.7rem] leading-tight text-foreground">{ set }</span>
+						}
+					</div>
+				}
+			}
+
+			if hasStats {
+				@DetailChip("Character Stats", "min-w-[15rem] flex-1") {
+					<div class="grid grid-cols-2 gap-x-4 gap-y-0.5">
+						for _, col := range [][]statCol{rowCol1, rowCol2} {
+							<div class="flex flex-col gap-0.5">
+								for _, s := range col {
+									<span class="flex items-baseline justify-between gap-2 text-[0.7rem] leading-tight">
+										<span class="text-muted-foreground">{ s.label }</span>
+										<span class="font-mono text-foreground">{ rowStat(character.FinalStats, s.key) }</span>
+									</span>
+								}
+							</div>
+						}
+					</div>
+					if hasBonus {
+						<div class="mt-1 flex items-baseline justify-between gap-2 border-t border-border/40 pt-1 text-[0.7rem]">
+							<span class="text-muted-foreground">{ bonusLabel }</span>
+							<span class="font-mono text-foreground">{ bonusValue }</span>
+						</div>
+					}
+				}
+			}
+		</div>
+	</div>
+}
+
+templ DetailChip(label string, class string) {
+	<div class={ style.CN("rounded-lg border border-border/50 bg-muted/30 px-3 py-1.5", class) }>
+		<div class="text-[0.6rem] uppercase tracking-wider text-muted-foreground">{ label }</div>
+		<div class="mt-0.5 text-xs text-foreground">
+			{ children... }
+		</div>
+	</div>
+}
