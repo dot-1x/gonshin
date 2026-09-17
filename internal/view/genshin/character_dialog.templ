@@ -136,11 +136,14 @@ templ CharacterDialog(detail *hoyolab.CharacterDetail) {
 	}
 }
 
-templ CharacterDialogError(message string) {
+templ CharacterDialogError(message string, fallbackName string) {
 	@ui.DialogOverlay()
 	@ui.DialogContent("max-h-[85vh] gap-0 overflow-hidden border-border/50 bg-popover p-0 sm:max-w-2xl") {
 		<div class="px-6 py-10 text-center">
 			<p class="text-sm font-medium text-destructive">{ message }</p>
+			if fallbackName != "" {
+				<p class="mt-2 text-xs text-muted-foreground">Showing cached roster data for { fallbackName }</p>
+			}
 		</div>
 	}
 }

@@ -1,0 +1,65 @@
+package genshin
+
+import "github.com/dotcchix/gonshin/internal/hoyolab"
+
+templ Page(data hoyolab.GenshinData) {
+	<main class="min-h-screen bg-background">
+		<div class="mx-auto max-w-3xl px-6 py-8">
+			<div class="mb-6 flex items-center gap-2 font-mono text-xs text-muted-foreground">
+				<span class="text-primary">~</span>
+				<span>/</span>
+				<span>hoyo</span>
+				<span>/</span>
+				<span class="text-secondary">genshin-impact</span>
+			</div>
+
+			@Nav("home", nil)
+
+			<div id="gen-tab-content">
+				@TabBody(data, "home")
+			</div>
+
+			<div class="mt-12 border-t border-border/30 pt-4">
+				<p class="text-center font-mono text-[10px] text-muted-foreground">
+					Data sourced from hoyolab API — Not affiliated with HoYoverse
+				</p>
+			</div>
+		</div>
+	</main>
+}
+
+// TabResponse is the htmx tab partial: the swapped tab body plus an
+// out-of-band replacement of the nav so the active tab styling stays correct.
+templ TabResponse(data hoyolab.GenshinData, active string) {
+	@Nav(active, templ.Attributes{"hx-swap-oob": "true"})
+	@TabBody(data, active)
+}
+
+templ TabBody(data hoyolab.GenshinData, active string) {
+	switch active {
+		case "characters":
+			<div class="space-y-6">
+				@CharacterShowcase(data.Characters, "All")
+			</div>
+		case "spiral":
+			<div class="space-y-6">
+				@SpiralAbyssSection(data.Abyss, data.Characters)
+			</div>
+		case "stygian":
+			<div class="space-y-6">
+				@StygianOnslaughtSection(data.Stygian, 0)
+			</div>
+		case "theater":
+			<div class="space-y-6">
+				@ImaginariumTheaterSection(data.Theater)
+			</div>
+		default:
+			<div class="space-y-6">
+				@PlayerCard(data.Info)
+				@StatsRow(data.Info)
+				<div class="pt-4">
+					@StygianOnslaughtSection(data.Stygian, 0)
+				</div>
+			</div>
+	}
+}

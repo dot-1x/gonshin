@@ -388,7 +388,7 @@ func CharacterShowcasePanel(characters []hoyolab.AccountCharacter, active string
 					"hx-target":         "#gen-dialog",
 					"hx-swap":           "innerHTML",
 					"hx-on::after-swap": "genOpenDialog()",
-					"onclick":           "genShowLoading('" + char.Name + "')",
+					"onclick":           "genShowLoading(this)",
 					"data-name":         char.Name,
 				}).Render(templ.WithChildren(ctx, templ_7745c5c3_Var11), templ_7745c5c3_Buffer)
 				if templ_7745c5c3_Err != nil {

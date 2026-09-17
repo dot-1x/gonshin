@@ -135,9 +135,9 @@ func TestCharacterDialog(t *testing.T) {
 }
 
 func TestCharacterDialogStates(t *testing.T) {
-	errHTML := render(t, CharacterDialogError("Failed to fetch (503)"))
-	if !strings.Contains(errHTML, "Failed to fetch (503)") {
-		t.Errorf("error dialog missing message")
+	errHTML := render(t, CharacterDialogError("Failed to fetch (503)", "Venti"))
+	if !strings.Contains(errHTML, "Failed to fetch (503)") || !strings.Contains(errHTML, "Showing cached roster data for Venti") {
+		t.Errorf("error dialog malformed")
 	}
 	loadHTML := render(t, CharacterDialogLoading("Venti"))
 	if !strings.Contains(loadHTML, "Loading Venti...") || !strings.Contains(loadHTML, "animate-spin") {

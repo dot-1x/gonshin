@@ -5,10 +5,10 @@ package ui
 import "github.com/dotcchix/gonshin/internal/style"
 
 const (
-	cardBase       = "bg-card text-card-foreground flex flex-col gap-6 rounded-xl border py-6 shadow-sm"
-	cardHeaderBase = "@container/card-header grid auto-rows-min grid-rows-[auto_auto] items-start gap-2 px-6 has-data-[slot=card-action]:grid-cols-[1fr_auto] [.border-b]:pb-6"
-	cardTitleBase  = "leading-none font-semibold"
-	cardActionBase = "col-start-2 row-span-2 row-start-1 self-start justify-self-end"
+	cardBase        = "bg-card text-card-foreground flex flex-col gap-6 rounded-xl border py-6 shadow-sm"
+	cardHeaderBase  = "@container/card-header grid auto-rows-min grid-rows-[auto_auto] items-start gap-2 px-6 has-data-[slot=card-action]:grid-cols-[1fr_auto] [.border-b]:pb-6"
+	cardTitleBase   = "leading-none font-semibold"
+	cardActionBase  = "col-start-2 row-span-2 row-start-1 self-start justify-self-end"
 	cardContentBase = "px-6"
 	cardDescBase    = "text-muted-foreground text-sm"
 	cardFooterBase  = "flex items-center px-6 [.border-t]:pt-6"

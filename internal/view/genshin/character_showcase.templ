@@ -54,7 +54,7 @@ templ CharacterShowcasePanel(characters []hoyolab.AccountCharacter, active strin
 					"hx-target":         "#gen-dialog",
 					"hx-swap":           "innerHTML",
 					"hx-on::after-swap": "genOpenDialog()",
-					"onclick":           "genShowLoading('" + char.Name + "')",
+					"onclick":           "genShowLoading(this)",
 					"data-name":         char.Name,
 				}) {
 					@ui.CardContent("px-0") {

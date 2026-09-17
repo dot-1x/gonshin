@@ -29,6 +29,7 @@ templ StygianOnslaughtSection(stygian *hoyolab.AccountStygian, cycleIdx int) {
 }
 
 templ StygianPanel(stygian *hoyolab.AccountStygian, cycleIdx int) {
+	if stygian != nil && len(stygian.Cycles) > 0 {
 	{{ idx := clampCycle(cycleIdx, len(stygian.Cycles)) }}
 	{{ cycle := stygian.Cycles[idx] }}
 	{{ difficulty := StygianDifficultyLabel(cycle.Difficulty) }}
@@ -95,4 +96,5 @@ templ StygianPanel(stygian *hoyolab.AccountStygian, cycleIdx int) {
 			@TeamCard(team, i == 0)
 		}
 	</div>
+	}
 }
