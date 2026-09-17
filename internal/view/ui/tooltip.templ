@@ -1,0 +1,26 @@
+package ui
+
+import "github.com/dotcchix/gonshin/internal/style"
+
+// Tooltip is a CSS-only port of the Radix tooltip used on the showcase grid.
+// The content is revealed on hover/focus of the wrapping group.
+templ Tooltip(class string) {
+	<div class={ style.CN("group/tooltip relative", class) }>
+		{ children... }
+	</div>
+}
+
+templ TooltipContent(class string) {
+	<div
+		data-slot="tooltip-content"
+		role="tooltip"
+		class={ style.CN(
+			tooltipContentBase,
+			"pointer-events-none absolute bottom-full left-1/2 z-50 mb-2 -translate-x-1/2 opacity-0 transition-opacity delay-150 group-hover/tooltip:opacity-100 group-focus-within/tooltip:opacity-100",
+			class,
+		) }
+	>
+		{ children... }
+		<span class="bg-foreground fill-foreground absolute left-1/2 top-full size-2.5 -translate-x-1/2 -translate-y-1/2 rotate-45 rounded-[2px]"></span>
+	</div>
+}

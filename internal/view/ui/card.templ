@@ -1,0 +1,45 @@
+package ui
+
+import "github.com/dotcchix/gonshin/internal/style"
+
+templ Card(class string, attrs templ.Attributes) {
+	<div data-slot="card" class={ style.CN(cardBase, class) } { attrs... }>
+		{ children... }
+	</div>
+}
+
+templ CardHeader(class string) {
+	<div data-slot="card-header" class={ style.CN(cardHeaderBase, class) }>
+		{ children... }
+	</div>
+}
+
+templ CardTitle(class string) {
+	<div data-slot="card-title" class={ style.CN(cardTitleBase, class) }>
+		{ children... }
+	</div>
+}
+
+templ CardDescription(class string) {
+	<div data-slot="card-description" class={ style.CN(cardDescBase, class) }>
+		{ children... }
+	</div>
+}
+
+templ CardAction(class string) {
+	<div data-slot="card-action" class={ style.CN(cardActionBase, class) }>
+		{ children... }
+	</div>
+}
+
+templ CardContent(class string) {
+	<div data-slot="card-content" class={ style.CN(cardContentBase, class) }>
+		{ children... }
+	</div>
+}
+
+templ CardFooter(class string) {
+	<div data-slot="card-footer" class={ style.CN(cardFooterBase, class) }>
+		{ children... }
+	</div>
+}

@@ -1,0 +1,28 @@
+package ui
+
+import "github.com/dotcchix/gonshin/internal/style"
+
+templ DialogOverlay() {
+	<div data-slot="dialog-overlay" data-state="open" class={ dialogOverlayBase } onclick="genCloseDialog()"></div>
+}
+
+templ DialogContent(class string) {
+	<div
+		data-slot="dialog-content"
+		data-state="open"
+		role="dialog"
+		aria-modal="true"
+		class={ style.CN(dialogContentBase, class) }
+	>
+		{ children... }
+		<button
+			data-slot="dialog-close"
+			type="button"
+			onclick="genCloseDialog()"
+			class="ring-offset-background focus:ring-ring absolute top-4 right-4 rounded-xs opacity-70 transition-opacity hover:opacity-100 focus:ring-2 focus:ring-offset-2 focus:outline-hidden disabled:pointer-events-none [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4"
+		>
+			@IconX("")
+			<span class="sr-only">Close</span>
+		</button>
+	</div>
+}

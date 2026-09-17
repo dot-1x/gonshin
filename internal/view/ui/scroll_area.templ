@@ -1,0 +1,14 @@
+package ui
+
+import "github.com/dotcchix/gonshin/internal/style"
+
+templ ScrollArea(class string) {
+	<div data-slot="scroll-area" class={ style.CN("relative", class) }>
+		<div
+			data-slot="scroll-area-viewport"
+			class="focus-visible:ring-ring/50 size-full rounded-[inherit] transition-[color,box-shadow] outline-none focus-visible:ring-[3px] focus-visible:outline-1 overflow-y-auto"
+		>
+			{ children... }
+		</div>
+	</div>
+}

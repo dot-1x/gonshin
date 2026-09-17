@@ -1,0 +1,7 @@
+package ui
+
+templ Badge(variant string, class string, attrs templ.Attributes) {
+	<span data-slot="badge" data-variant={ variant } class={ badgeClass(variant, class) } { attrs... }>
+		{ children... }
+	</span>
+}

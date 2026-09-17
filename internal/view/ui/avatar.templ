@@ -1,0 +1,19 @@
+package ui
+
+import "github.com/dotcchix/gonshin/internal/style"
+
+templ Avatar(class string) {
+	<div data-slot="avatar" class={ style.CN(avatarBase, class) }>
+		{ children... }
+	</div>
+}
+
+templ AvatarImage(src string, alt string, class string) {
+	<img data-slot="avatar-image" src={ src } alt={ alt } class={ style.CN(avatarImageBase, class) } />
+}
+
+templ AvatarFallback(class string) {
+	<div data-slot="avatar-fallback" class={ style.CN(avatarFallbackBase, class) }>
+		{ children... }
+	</div>
+}

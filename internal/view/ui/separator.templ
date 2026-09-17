@@ -1,0 +1,11 @@
+package ui
+
+import "github.com/dotcchix/gonshin/internal/style"
+
+templ Separator(orientation string, class string) {
+	if orientation == "vertical" {
+		<div data-slot="separator" data-orientation="vertical" role="none" class={ style.CN(separatorBase, class) }></div>
+	} else {
+		<div data-slot="separator" data-orientation="horizontal" role="none" class={ style.CN(separatorBase, class) }></div>
+	}
+}
