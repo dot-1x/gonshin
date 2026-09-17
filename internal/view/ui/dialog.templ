@@ -2,6 +2,24 @@ package ui
 
 import "github.com/dotcchix/gonshin/internal/style"
 
+templ DialogHeader(class string) {
+	<div data-slot="dialog-header" class={ style.CN("flex flex-col gap-2 text-center sm:text-left", class) }>
+		{ children... }
+	</div>
+}
+
+templ DialogTitle(class string) {
+	<div data-slot="dialog-title" class={ style.CN("text-lg leading-none font-semibold", class) }>
+		{ children... }
+	</div>
+}
+
+templ DialogDescription(class string) {
+	<div data-slot="dialog-description" class={ style.CN("text-muted-foreground text-sm", class) }>
+		{ children... }
+	</div>
+}
+
 templ DialogOverlay() {
 	<div data-slot="dialog-overlay" data-state="open" class={ dialogOverlayBase } onclick="genCloseDialog()"></div>
 }

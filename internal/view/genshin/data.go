@@ -59,6 +59,12 @@ func StygianDifficultyLabel(index int) string {
 	}
 }
 
+// lv renders a level label, e.g. "Lv.90".
+func lv(n int) string { return "Lv." + strconv.Itoa(n) }
+
+// cLabel renders a constellation label, e.g. "C6".
+func cLabel(n int) string { return "C" + strconv.Itoa(n) }
+
 // navActiveClass returns the tab button styling for its active state.
 func navActiveClass(active bool) string {
 	if active {

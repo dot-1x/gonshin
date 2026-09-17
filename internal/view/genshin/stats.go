@@ -15,7 +15,7 @@ type statItem struct {
 	icon  templ.Component
 }
 
-func statValue(v int) string {
+func statCardValue(v int) string {
 	if v == 0 {
 		return "—"
 	}
@@ -27,7 +27,7 @@ func newStatItems(info *hoyolab.AccountInfo) []statItem {
 		if info == nil {
 			return "—"
 		}
-		return statValue(pick(info))
+		return statCardValue(pick(info))
 	}
 	return []statItem{
 		{"Achievements", value(func(i *hoyolab.AccountInfo) int { return i.AchievementNumber }), ui.IconTrophy("h-5 w-5 shrink-0 text-primary")},

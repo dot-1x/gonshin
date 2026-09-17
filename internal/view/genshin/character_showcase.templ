@@ -1,0 +1,163 @@
+package genshin
+
+import (
+	"strconv"
+
+	"github.com/dotcchix/gonshin/internal/hoyolab"
+	"github.com/dotcchix/gonshin/internal/style"
+	"github.com/dotcchix/gonshin/internal/view/ui"
+)
+
+templ CharacterShowcase(characters []hoyolab.AccountCharacter, active string) {
+	<section class="space-y-4">
+		@ui.Card("border-border/50 bg-card backdrop-blur-sm", nil) {
+			@ui.CardHeader("") {
+				@ui.CardTitle("flex items-center gap-2 font-mono text-base text-secondary") {
+					@ui.IconSparkles("h-4 w-4")
+					Character Showcase
+				}
+			}
+		}
+
+		if len(characters) == 0 {
+			@ui.Card("border-border/50 bg-card backdrop-blur-sm", nil) {
+				@ui.CardContent("") {
+					<p class="text-center text-sm text-muted-foreground">No characters available.</p>
+				}
+			}
+		} else {
+			<div id="showcase-panel" class="space-y-4">
+				@CharacterShowcasePanel(characters, active)
+			</div>
+		}
+	</section>
+}
+
+templ CharacterShowcasePanel(characters []hoyolab.AccountCharacter, active string) {
+	<div class="flex flex-wrap items-center gap-2">
+		@FilterButton("All", len(characters), active == "All", showcaseTarget("All", active)) {
+			@ui.IconSparkles("h-4 w-4")
+		}
+		{{ counts, elements := elementCounts(characters) }}
+		for _, el := range elements {
+			@FilterButton(string(el), counts[el], active == string(el), showcaseTarget(string(el), active)) {
+				@ElementIcon(el, "", 16)
+			}
+		}
+	</div>
+
+	<div class="grid grid-cols-2 gap-3 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5">
+		for _, char := range filterByElement(characters, active) {
+			@ui.Tooltip("") {
+				@ui.Card("group cursor-pointer overflow-hidden border-border/50 bg-card py-0 backdrop-blur-sm transition-colors hover:border-primary/50", templ.Attributes{
+					"hx-get":            "/characters/" + strconv.Itoa(char.ID),
+					"hx-target":         "#gen-dialog",
+					"hx-swap":           "innerHTML",
+					"hx-on::after-swap": "genOpenDialog()",
+					"onclick":           "genShowLoading('" + char.Name + "')",
+					"data-name":         char.Name,
+				}) {
+					@ui.CardContent("px-0") {
+						<div class="relative aspect-square w-full overflow-hidden bg-muted">
+							if char.Icon != "" {
+								<img
+									src={ char.Icon }
+									alt={ char.Name }
+									class="absolute inset-0 h-full w-full object-cover transition-transform group-hover:scale-105"
+									sizes="(max-width: 640px) 50vw, 20vw"
+								/>
+							} else {
+								<div class="flex h-full items-center justify-center">
+									@ui.IconSparkles("h-8 w-8 text-muted-foreground")
+								</div>
+							}
+							@elementDot(&char.Element, "absolute left-2 top-2 h-3 w-3 rounded-full ring-2 ring-background")
+						</div>
+						<div class="px-3 py-2">
+							<p class="truncate text-xs font-semibold text-foreground">{ char.Name }</p>
+							<div class="mt-0.5 flex items-center gap-1.5 text-[0.65rem] text-muted-foreground">
+								<span>{ lv(char.Level) }</span>
+								<span class="text-primary">{ cLabel(char.ActivedConstellationNum) }</span>
+							</div>
+						</div>
+					}
+				}
+				@ui.TooltipContent("w-64 gap-2 rounded-lg border border-border/50 bg-popover p-3 text-popover-foreground shadow-md") {
+					@DetailPanel(char)
+				}
+			}
+		}
+	</div>
+}
+
+templ FilterButton(label string, count int, active bool, target string) {
+	<button
+		type="button"
+		hx-get={ target }
+		hx-target="#showcase-panel"
+		hx-swap="innerHTML"
+		title={ label + " (" + strconv.Itoa(count) + ")" }
+		class={ style.CN(
+			"group flex items-center gap-2 rounded-full border px-3 py-1.5 font-mono text-xs transition-colors",
+			activeClass(active, "border-primary/60 bg-primary/10 text-foreground", "border-border/50 bg-card/50 text-muted-foreground hover:text-foreground"),
+		) }
+	>
+		<span class="flex h-4 w-4 items-center justify-center">
+			{ children... }
+		</span>
+		<span>{ label }</span>
+		<span class="text-[0.6rem] opacity-60">{ strconv.Itoa(count) }</span>
+	</button>
+}
+
+templ DetailPanel(char hoyolab.AccountCharacter) {
+	<div class="space-y-2 text-left">
+		<div class="flex items-center gap-2">
+			@elementDot(&char.Element, "h-2.5 w-2.5 rounded-full")
+			<span class="text-sm font-semibold text-foreground">{ char.Name }</span>
+		</div>
+		<div class="flex flex-wrap gap-1.5">
+			@ui.Badge("secondary", "text-[0.65rem]", nil) {
+				{ string(char.Element) }
+			}
+			@ui.Badge("secondary", "text-[0.65rem]", nil) {
+				{ lv(char.Level) }
+			}
+			@ui.Badge("outline", "text-[0.65rem]", nil) {
+				{ cLabel(char.ActivedConstellationNum) }
+			}
+		</div>
+		if char.Weapon.Name != "" {
+			<div class="flex items-center gap-2 border-t border-border/40 pt-2">
+				<img
+					src={ char.Weapon.Icon }
+					alt={ char.Weapon.Name }
+					width="22"
+					height="22"
+					class="h-[22px] w-[22px] shrink-0 object-contain"
+				/>
+				<div class="min-w-0">
+					<p class="truncate text-[0.7rem] font-medium text-foreground">{ char.Weapon.Name }</p>
+					<p class="text-[0.6rem] text-muted-foreground">{ lv(char.Weapon.Level) }</p>
+				</div>
+			</div>
+		}
+	</div>
+}
+
+// elementDot renders the small coloured element indicator.
+templ elementDot(el *hoyolab.Element, class string) {
+	{{ color := colorOf(el) }}
+	if color != "" {
+		<span class={ class } style={ "background-color: " + color } title={ string(*el) }></span>
+	} else {
+		<span class={ class } title=""></span>
+	}
+}
+
+func activeClass(active bool, whenActive, whenInactive string) string {
+	if active {
+		return whenActive
+	}
+	return whenInactive
+}
