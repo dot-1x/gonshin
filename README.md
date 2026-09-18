@@ -64,6 +64,20 @@ Copy `.env.example` to `.env` (or export the vars):
 | `ADDR` | `:8080` | HTTP listen address |
 | `CACHE_TTL_SECONDS` | `1200` | Cache TTL for list endpoints (detail is never cached) |
 
+## Docker
+
+```sh
+docker compose up -d --build   # serves on http://localhost:8510
+```
+
+The image is a multi-stage build (Tailwind CSS → Go/templ build → minimal
+Alpine runtime) and runs as a non-root user. Override the API base or TTL via
+environment variables:
+
+```sh
+HOYOLAB_API_BASE=http://host.docker.internal:8504 docker compose up -d
+```
+
 ## Development
 
 ```sh

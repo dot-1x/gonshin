@@ -1,0 +1,11 @@
+services:
+  gonshin:
+    build: .
+    container_name: gonshin
+    ports:
+      - "8510:8510"
+    environment:
+      ADDR: ":8510"
+      HOYOLAB_API_BASE: "${HOYOLAB_API_BASE:-https://hoyo.dotcchix.dev}"
+      CACHE_TTL_SECONDS: "${CACHE_TTL_SECONDS:-1200}"
+    restart: unless-stopped

@@ -1,0 +1,12 @@
+node_modules/
+bin/
+.git/
+.gitignore
+.env
+*.test
+coverage.out
+web/static/app.css
+README.md
+Dockerfile
+docker-compose.yml
+.dockerignore
