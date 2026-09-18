@@ -95,6 +95,7 @@ func TestPage(t *testing.T) {
 		"Nefer",
 		"Flins",
 		"Enka.network",
+		"Akasha.cv",
 		"Days Active",
 	} {
 		if !strings.Contains(body, want) {

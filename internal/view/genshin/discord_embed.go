@@ -245,7 +245,7 @@ func progressText(abyss *hoyolab.AccountAbyss, stygian *hoyolab.AccountStygian) 
 			line += " · " + escapeDiscordMarkdown(cycle.Name)
 		}
 		if cycle.Difficulty > 0 {
-			line += " · " + StygianDifficultyLabel(cycle.Difficulty-1)
+			line += " · " + StygianDifficultyLabel(cycle.Difficulty)
 		}
 		if cycle.TotalClearTime > 0 {
 			line += " · " + FormatClearTimeN(cycle.TotalClearTime)
@@ -278,7 +278,7 @@ func linkButtons(base string) (DiscordActionRow, bool) {
 			DiscordButton{Type: discordTypeButton, Style: discordButtonStyleLink, URL: base + "/?tab=characters", Label: "Characters"},
 			DiscordButton{Type: discordTypeButton, Style: discordButtonStyleLink, URL: base + "/?tab=spiral", Label: "Spiral Abyss"},
 			DiscordButton{Type: discordTypeButton, Style: discordButtonStyleLink, URL: base + "/?tab=stygian", Label: "Stygian"},
-			DiscordButton{Type: discordTypeButton, Style: discordButtonStyleLink, URL: base + "/?tab=theater", Label: "Theater"},
+			DiscordButton{Type: discordTypeButton, Style: discordButtonStyleLink, URL: "https://akasha.cv/profile/@dotcchix", Label: "Akasha.cv"},
 			DiscordButton{Type: discordTypeButton, Style: discordButtonStyleLink, URL: "https://enka.network/u/dotcchix/", Label: "Enka.network"},
 		},
 	}, true

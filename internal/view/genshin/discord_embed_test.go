@@ -136,6 +136,32 @@ func TestDiscordEmbedSummary(t *testing.T) {
 	}
 }
 
+func TestDiscordEmbedStygianDifficultyMatchesUI(t *testing.T) {
+	cases := []struct {
+		difficulty int
+		want       string
+	}{
+		{6, "Dire"},
+		{5, "Fearless"},
+	}
+	for _, tc := range cases {
+		data := embedData()
+		data.Stygian = &hoyolab.AccountStygian{Cycles: []hoyolab.StygianCycle{
+			{Name: "Season One", Difficulty: tc.difficulty, TotalClearTime: 180},
+		}}
+		embed := BuildDiscordEmbed(data, "https://genshin.test")
+		var summary string
+		for _, c := range embed.Component.Components {
+			if td, ok := c.(DiscordTextDisplay); ok && strings.Contains(td.Content, "Stygian Onslaught") {
+				summary = td.Content
+			}
+		}
+		if want := "· " + tc.want; !strings.Contains(summary, want) {
+			t.Errorf("difficulty %d summary missing %q: %q", tc.difficulty, want, summary)
+		}
+	}
+}
+
 func TestDiscordEmbedButtons(t *testing.T) {
 	row, ok := findActionRow(BuildDiscordEmbed(embedData(), "https://genshin.test"))
 	if !ok {
@@ -144,6 +170,7 @@ func TestDiscordEmbedButtons(t *testing.T) {
 	if len(row.Components) != 5 {
 		t.Fatalf("buttons = %d, want 5", len(row.Components))
 	}
+	var labels, urls []string
 	for _, c := range row.Components {
 		btn, ok := c.(DiscordButton)
 		if !ok {
@@ -155,6 +182,17 @@ func TestDiscordEmbedButtons(t *testing.T) {
 		if !strings.HasPrefix(btn.URL, "https://") {
 			t.Errorf("button %q url = %q", btn.Label, btn.URL)
 		}
+		labels = append(labels, btn.Label)
+		urls = append(urls, btn.URL)
+	}
+	if strings.Contains(strings.Join(urls, " "), "?tab=theater") {
+		t.Errorf("theater button should be replaced: %v", urls)
+	}
+	if !strings.Contains(strings.Join(labels, " "), "Akasha.cv") {
+		t.Errorf("expected Akasha.cv button: %v", labels)
+	}
+	if !strings.Contains(strings.Join(urls, " "), "https://akasha.cv/profile/@dotcchix") {
+		t.Errorf("expected akasha profile url: %v", urls)
 	}
 	if got := row.Components[len(row.Components)-1].(DiscordButton).URL; got != "https://enka.network/u/dotcchix/" {
 		t.Errorf("enka button url = %q", got)
