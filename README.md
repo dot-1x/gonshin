@@ -119,7 +119,7 @@ rendering, and HTTP routes. Golden snapshots for the page and tab routes live in
 Sharing the profile URL in Discord renders a custom **component embed** built
 from live data (`discord:component-embed`, documented upstream in
 [discord-api-docs#8606](https://github.com/discord/discord-api-docs/pull/8606)):
-player card, a Mavuika/Varesa/Kirara/Nefer gallery, Stygian/Abyss summaries and
+player card, a Mavuika/Varesa/Nefer/Flins gallery, Stygian/Abyss summaries and
 deep-link buttons. Standard Open Graph tags are emitted as a fallback.
 
 This requires a public HTTPS origin reachable by Discord's crawler

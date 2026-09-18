@@ -12,11 +12,12 @@ func embedData() hoyolab.GenshinData {
 	return hoyolab.GenshinData{
 		Info: &hoyolab.AccountInfo{
 			UID: 824677421, Nickname: "Zex.", Level: 60,
-			GameHeadIcon: "https://cdn.test/head.png", AchievementNumber: 1362, TotalCharacters: 103,
+			GameHeadIcon: "https://cdn.test/head.png", AchievementNumber: 1362,
+			ActiveDayNumber: 1893, TotalCharacters: 103,
 		},
 		Characters: []hoyolab.AccountCharacter{
 			{Name: "Venti", Icon: "https://cdn.test/venti.png", Element: hoyolab.Anemo, Level: 90},
-			{Name: "Kirara", Icon: "kirara.png", Element: hoyolab.Dendro, Level: 80},
+			{Name: "Flins", Icon: "flins.png", Element: hoyolab.Electro, Level: 90},
 			{Name: "Mavuika", Icon: "https://cdn.test/mavuika.png", Element: hoyolab.Pyro, Level: 90},
 			{Name: "Nefer", Icon: "nefer.png", Element: hoyolab.Dendro, Level: 90},
 			{Name: "Varesa", Icon: "https://cdn.test/varesa.png", Element: hoyolab.Electro, Level: 90},
@@ -63,36 +64,54 @@ func TestDiscordEmbedGallery(t *testing.T) {
 	if !ok {
 		t.Fatal("expected media gallery")
 	}
-	want := []string{"Mavuika", "Varesa", "Kirara", "Nefer"}
+	want := []string{"Mavuika", "Varesa", "Nefer", "Flins"}
 	if len(gallery.Items) != len(want) {
 		t.Fatalf("gallery items = %d, want %d", len(gallery.Items), len(want))
 	}
 	for i, name := range want {
-		desc := gallery.Items[i].Description
-		if !strings.HasPrefix(desc, name) {
-			t.Errorf("item %d description = %q, want prefix %q", i, desc, name)
+		item := gallery.Items[i]
+		if !strings.HasPrefix(item.Description, name) {
+			t.Errorf("item %d description = %q, want prefix %q", i, item.Description, name)
 		}
-	}
-	for _, item := range gallery.Items {
-		if !strings.HasPrefix(item.Media.URL, "https://") {
-			t.Errorf("gallery media %q is not absolute", item.Media.URL)
+		wantURL := "https://genshin.test/static/genshin/embed/" + name + ".webp"
+		if item.Media.URL != wantURL {
+			t.Errorf("item %d media = %q, want %q", i, item.Media.URL, wantURL)
 		}
 	}
 }
 
-func TestDiscordEmbedGalleryOmitsMissing(t *testing.T) {
+func TestDiscordEmbedGalleryUsesBundledAssets(t *testing.T) {
 	data := embedData()
-	data.Characters = []hoyolab.AccountCharacter{
-		{Name: "Mavuika", Icon: "https://cdn.test/mavuika.png", Element: hoyolab.Pyro, Level: 90},
-	}
+	data.Characters = nil
 	gallery, ok := findGallery(BuildDiscordEmbed(data, "https://genshin.test"))
-	if !ok || len(gallery.Items) != 1 {
-		t.Fatalf("expected single-item gallery, got %+v (ok=%v)", gallery, ok)
+	if !ok || len(gallery.Items) != 4 {
+		t.Fatalf("expected four bundled items, got %+v (ok=%v)", gallery, ok)
+	}
+	for i, name := range discordGalleryNames {
+		if got := gallery.Items[i].Description; got != name {
+			t.Errorf("item %d description = %q, want name fallback %q", i, got, name)
+		}
 	}
 
-	data.Characters = nil
-	if _, ok := findGallery(BuildDiscordEmbed(data, "https://genshin.test")); ok {
-		t.Errorf("empty roster should omit the gallery")
+	// Without a base URL the media cannot be made absolute, so the gallery is
+	// omitted rather than emitting invalid relative URLs.
+	if _, ok := findGallery(BuildDiscordEmbed(data, "")); ok {
+		t.Errorf("gallery should be omitted without a base URL")
+	}
+}
+
+func TestDiscordEmbedPlayerSection(t *testing.T) {
+	embed := BuildDiscordEmbed(embedData(), "https://genshin.test")
+	var content string
+	for _, c := range embed.Component.Components {
+		if s, ok := c.(DiscordSection); ok {
+			content = s.Components[0].(DiscordTextDisplay).Content
+		}
+	}
+	for _, want := range []string{"# Zex.", "**AR** 60", "**UID** 824677421", "**Achievements** 1362", "**Days Active** 1893"} {
+		if !strings.Contains(content, want) {
+			t.Errorf("player section missing %q: %q", want, content)
+		}
 	}
 }
 

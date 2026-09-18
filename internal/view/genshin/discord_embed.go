@@ -31,8 +31,9 @@ const discordAccentColor = 3172760
 const discordMaxMediaURLLen = 2048
 
 // discordGalleryNames is the fixed set of characters shown in the embed
-// gallery, in display order. Characters not in the roster are omitted.
-var discordGalleryNames = []string{"Mavuika", "Varesa", "Kirara", "Nefer"}
+// gallery, in display order. Each maps to a bundled webp asset under
+// /static/genshin/embed.
+var discordGalleryNames = []string{"Mavuika", "Varesa", "Nefer", "Flins"}
 
 // DiscordEmbed is the document written into the discord:component-embed script.
 type DiscordEmbed struct {
@@ -154,6 +155,9 @@ func playerSection(info *hoyolab.AccountInfo, base string) any {
 		if info.AchievementNumber != 0 {
 			stats = append(stats, "**Achievements** "+strconv.Itoa(info.AchievementNumber))
 		}
+		if info.ActiveDayNumber != 0 {
+			stats = append(stats, "**Days Active** "+strconv.Itoa(info.ActiveDayNumber))
+		}
 		if info.TotalCharacters != 0 {
 			stats = append(stats, "**Characters** "+strconv.Itoa(info.TotalCharacters))
 		}
@@ -189,7 +193,8 @@ func playerSection(info *hoyolab.AccountInfo, base string) any {
 	return text
 }
 
-// characterGallery renders the fixed gallery names that exist in the roster.
+// characterGallery renders the fixed gallery names from bundled webp assets,
+// enriching the description with roster data when the character is owned.
 func characterGallery(characters []hoyolab.AccountCharacter, base string) (DiscordMediaGallery, bool) {
 	byName := make(map[string]hoyolab.AccountCharacter, len(characters))
 	for _, c := range characters {
@@ -198,23 +203,28 @@ func characterGallery(characters []hoyolab.AccountCharacter, base string) (Disco
 
 	var items []DiscordGalleryItem
 	for _, name := range discordGalleryNames {
-		c, ok := byName[name]
-		if !ok {
-			continue
-		}
-		url := absMediaURL(base, c.Icon)
+		url := absMediaURL(base, discordGalleryImage(name))
 		if url == "" {
 			continue
 		}
+		description := name
+		if c, ok := byName[name]; ok {
+			description = galleryDescription(c)
+		}
 		items = append(items, DiscordGalleryItem{
 			Media:       DiscordUnfurledMedia{URL: url},
-			Description: galleryDescription(c),
+			Description: description,
 		})
 	}
 	if len(items) == 0 {
 		return DiscordMediaGallery{}, false
 	}
 	return DiscordMediaGallery{Type: discordTypeMediaGallery, Items: items}, true
+}
+
+// discordGalleryImage is the bundled asset path for a gallery character.
+func discordGalleryImage(name string) string {
+	return "/static/genshin/embed/" + name + ".webp"
 }
 
 func galleryDescription(c hoyolab.AccountCharacter) string {

@@ -18,7 +18,7 @@ type stubProvider struct {
 }
 
 func (s stubProvider) Info(context.Context) (*hoyolab.AccountInfo, error) {
-	return &hoyolab.AccountInfo{UID: 824677421, Nickname: "Zex.", Level: 60}, nil
+	return &hoyolab.AccountInfo{UID: 824677421, Nickname: "Zex.", Level: 60, ActiveDayNumber: 1893}, nil
 }
 
 func (s stubProvider) Characters(context.Context) ([]hoyolab.AccountCharacter, error) {
@@ -44,7 +44,7 @@ func newStub() stubProvider {
 			{ID: 10000089, Icon: "b.png", Name: "Furina", Element: hoyolab.Hydro, Level: 90},
 			{ID: 10000106, Icon: "mavuika.png", Name: "Mavuika", Element: hoyolab.Pyro, Level: 90},
 			{ID: 10000111, Icon: "varesa.png", Name: "Varesa", Element: hoyolab.Electro, Level: 90},
-			{ID: 10000061, Icon: "kirara.png", Name: "Kirara", Element: hoyolab.Dendro, Level: 80},
+			{ID: 10000116, Icon: "flins.png", Name: "Flins", Level: 90},
 			{ID: 10000113, Icon: "nefer.png", Name: "Nefer", Element: hoyolab.Dendro, Level: 90},
 		},
 		detail: &hoyolab.CharacterDetail{ID: 10000022, Icon: "a.png", Name: "Venti", Element: hoyolab.Anemo, Level: 90, Rarity: 5},
@@ -92,9 +92,10 @@ func TestPage(t *testing.T) {
 		`name="theme-color"`,
 		"Mavuika",
 		"Varesa",
-		"Kirara",
 		"Nefer",
+		"Flins",
 		"Enka.network",
+		"Days Active",
 	} {
 		if !strings.Contains(body, want) {
 			t.Errorf("page missing discord preview %q", want)
