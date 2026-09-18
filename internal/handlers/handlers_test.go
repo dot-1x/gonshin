@@ -42,6 +42,10 @@ func newStub() stubProvider {
 		characters: []hoyolab.AccountCharacter{
 			{ID: 10000022, Icon: "a.png", Name: "Venti", Element: hoyolab.Anemo, Level: 90},
 			{ID: 10000089, Icon: "b.png", Name: "Furina", Element: hoyolab.Hydro, Level: 90},
+			{ID: 10000106, Icon: "mavuika.png", Name: "Mavuika", Element: hoyolab.Pyro, Level: 90},
+			{ID: 10000111, Icon: "varesa.png", Name: "Varesa", Element: hoyolab.Electro, Level: 90},
+			{ID: 10000061, Icon: "kirara.png", Name: "Kirara", Element: hoyolab.Dendro, Level: 80},
+			{ID: 10000113, Icon: "nefer.png", Name: "Nefer", Element: hoyolab.Dendro, Level: 90},
 		},
 		detail: &hoyolab.CharacterDetail{ID: 10000022, Icon: "a.png", Name: "Venti", Element: hoyolab.Anemo, Level: 90, Rarity: 5},
 		stygian: &hoyolab.AccountStygian{Cycles: []hoyolab.StygianCycle{
@@ -53,7 +57,7 @@ func newStub() stubProvider {
 
 func newMux(p hoyolab.Provider) *http.ServeMux {
 	mux := http.NewServeMux()
-	New(p).Routes(mux)
+	New(p, "").Routes(mux)
 	return mux
 }
 
@@ -77,6 +81,45 @@ func TestPage(t *testing.T) {
 		if !strings.Contains(body, want) {
 			t.Errorf("page missing %q", want)
 		}
+	}
+
+	for _, want := range []string{
+		`id="discord:component-embed"`,
+		`type="application/json"`,
+		`property="og:url"`,
+		`property="og:image"`,
+		`name="twitter:card"`,
+		`name="theme-color"`,
+		"Mavuika",
+		"Varesa",
+		"Kirara",
+		"Nefer",
+		"Enka.network",
+	} {
+		if !strings.Contains(body, want) {
+			t.Errorf("page missing discord preview %q", want)
+		}
+	}
+}
+
+func TestPageTabDeepLink(t *testing.T) {
+	rec := get(t, newMux(newStub()), "/?tab=characters")
+	body := rec.Body.String()
+	if !strings.Contains(body, "Character Showcase") {
+		t.Errorf("expected Characters tab body")
+	}
+	if !strings.Contains(body, `href="/tabs/characters"`) && !strings.Contains(body, `hx-get="/tabs/characters"`) {
+		t.Errorf("expected nav present")
+	}
+	if strings.Count(body, "border-b-2 border-primary text-primary") != 1 {
+		t.Errorf("expected exactly one active tab")
+	}
+}
+
+func TestPageTabFallback(t *testing.T) {
+	rec := get(t, newMux(newStub()), "/?tab=nope")
+	if !strings.Contains(rec.Body.String(), "Player") && !strings.Contains(rec.Body.String(), "Zex.") {
+		t.Errorf("invalid tab should fall back to home")
 	}
 }
 

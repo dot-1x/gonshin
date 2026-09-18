@@ -27,7 +27,7 @@ func main() {
 
 	mux := http.NewServeMux()
 	mux.Handle("GET /static/", cacheStatic(http.StripPrefix("/static/", http.FileServer(http.Dir("web/static")))))
-	handlers.New(provider).Routes(mux)
+	handlers.New(provider, cfg.PublicBaseURL).Routes(mux)
 
 	srv := &http.Server{
 		Addr:              cfg.Addr,

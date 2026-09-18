@@ -8,4 +8,5 @@ services:
       ADDR: ":8510"
       HOYOLAB_API_BASE: "${HOYOLAB_API_BASE:-https://hoyo.dotcchix.dev}"
       CACHE_TTL_SECONDS: "${CACHE_TTL_SECONDS:-1200}"
+      PUBLIC_BASE_URL: "${PUBLIC_BASE_URL:-}"
     restart: unless-stopped

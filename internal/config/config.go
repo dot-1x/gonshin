@@ -16,14 +16,18 @@ type Config struct {
 	Addr string
 	// CacheTTL is how long cached list endpoints are considered fresh.
 	CacheTTL time.Duration
+	// PublicBaseURL is the public site origin used in Discord link previews.
+	// When empty the handlers derive it from the request.
+	PublicBaseURL string
 }
 
 // Load reads configuration from the environment, applying defaults.
 func Load() (Config, error) {
 	cfg := Config{
-		APIBase:  envOr("HOYOLAB_API_BASE", "https://hoyo.dotcchix.dev"),
-		Addr:     envOr("ADDR", ":8080"),
-		CacheTTL: 20 * time.Minute,
+		APIBase:       envOr("HOYOLAB_API_BASE", "https://hoyo.dotcchix.dev"),
+		Addr:          envOr("ADDR", ":8080"),
+		CacheTTL:      20 * time.Minute,
+		PublicBaseURL: envOr("PUBLIC_BASE_URL", ""),
 	}
 
 	if raw := os.Getenv("CACHE_TTL_SECONDS"); raw != "" {

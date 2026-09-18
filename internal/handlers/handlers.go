@@ -7,6 +7,7 @@ import (
 	"log"
 	"net/http"
 	"strconv"
+	"strings"
 
 	"github.com/a-h/templ"
 
@@ -17,11 +18,14 @@ import (
 // Handlers holds the route handlers' dependencies.
 type Handlers struct {
 	provider hoyolab.Provider
+	baseURL  string
 }
 
-// New creates a Handlers backed by the given provider.
-func New(p hoyolab.Provider) *Handlers {
-	return &Handlers{provider: p}
+// New creates a Handlers backed by the given provider. baseURL is the public
+// site origin used for Discord link previews; when empty it is derived from the
+// request.
+func New(p hoyolab.Provider, baseURL string) *Handlers {
+	return &Handlers{provider: p, baseURL: strings.TrimRight(baseURL, "/")}
 }
 
 // Routes registers all page routes on mux.
@@ -41,8 +45,38 @@ func render(w http.ResponseWriter, r *http.Request, c templ.Component) {
 }
 
 func (h *Handlers) page(w http.ResponseWriter, r *http.Request) {
+	active := r.URL.Query().Get("tab")
+	if !genshin.IsTab(active) {
+		active = "home"
+	}
 	data := hoyolab.All(r.Context(), h.provider)
-	render(w, r, genshin.Layout(genshin.Page(data)))
+	baseURL := h.publicBaseURL(r)
+	render(w, r, genshin.Layout(genshin.Page(data, active), genshin.BuildDiscordEmbed(data, baseURL), baseURL))
+}
+
+// publicBaseURL resolves the site origin for links and og tags, preferring the
+// configured value and otherwise reconstructing it from the request.
+func (h *Handlers) publicBaseURL(r *http.Request) string {
+	if h.baseURL != "" {
+		return h.baseURL
+	}
+	host := r.Host
+	if host == "" {
+		return ""
+	}
+	scheme := "http"
+	if r.TLS != nil {
+		scheme = "https"
+	}
+	if proto := r.Header.Get("X-Forwarded-Proto"); proto != "" {
+		if comma := strings.IndexByte(proto, ','); comma >= 0 {
+			proto = proto[:comma]
+		}
+		if proto = strings.TrimSpace(proto); proto != "" {
+			scheme = proto
+		}
+	}
+	return scheme + "://" + host
 }
 
 func (h *Handlers) tab(w http.ResponseWriter, r *http.Request) {

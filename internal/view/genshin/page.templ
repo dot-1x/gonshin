@@ -2,7 +2,7 @@ package genshin
 
 import "github.com/dotcchix/gonshin/internal/hoyolab"
 
-templ Page(data hoyolab.GenshinData) {
+templ Page(data hoyolab.GenshinData, active string) {
 	<main class="min-h-screen bg-background">
 		<div class="mx-auto max-w-3xl px-6 py-8">
 			<div class="mb-6 flex items-center gap-2 font-mono text-xs text-muted-foreground">
@@ -13,10 +13,10 @@ templ Page(data hoyolab.GenshinData) {
 				<span class="text-secondary">genshin-impact</span>
 			</div>
 
-			@Nav("home", nil)
+			@Nav(active, nil)
 
 			<div id="gen-tab-content">
-				@TabBody(data, "home")
+				@TabBody(data, active)
 			</div>
 
 			<div class="mt-12 border-t border-border/30 pt-4">

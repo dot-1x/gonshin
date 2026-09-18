@@ -9,6 +9,7 @@ func TestLoadDefaults(t *testing.T) {
 	t.Setenv("HOYOLAB_API_BASE", "")
 	t.Setenv("ADDR", "")
 	t.Setenv("CACHE_TTL_SECONDS", "")
+	t.Setenv("PUBLIC_BASE_URL", "")
 
 	cfg, err := Load()
 	if err != nil {
@@ -23,12 +24,16 @@ func TestLoadDefaults(t *testing.T) {
 	if cfg.CacheTTL != 20*time.Minute {
 		t.Errorf("CacheTTL = %v", cfg.CacheTTL)
 	}
+	if cfg.PublicBaseURL != "" {
+		t.Errorf("PublicBaseURL = %q", cfg.PublicBaseURL)
+	}
 }
 
 func TestLoadOverrides(t *testing.T) {
 	t.Setenv("HOYOLAB_API_BASE", "http://localhost:8504")
 	t.Setenv("ADDR", ":9000")
 	t.Setenv("CACHE_TTL_SECONDS", "60")
+	t.Setenv("PUBLIC_BASE_URL", "https://genshin.example.com")
 
 	cfg, err := Load()
 	if err != nil {
@@ -36,6 +41,9 @@ func TestLoadOverrides(t *testing.T) {
 	}
 	if cfg.APIBase != "http://localhost:8504" || cfg.Addr != ":9000" || cfg.CacheTTL != time.Minute {
 		t.Errorf("unexpected config: %+v", cfg)
+	}
+	if cfg.PublicBaseURL != "https://genshin.example.com" {
+		t.Errorf("PublicBaseURL = %q", cfg.PublicBaseURL)
 	}
 }
 

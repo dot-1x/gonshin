@@ -31,7 +31,8 @@ COPY --from=css /app/web/static/app.css ./web/static/app.css
 ENV \
     ADDR=":8510" \
     HOYOLAB_API_BASE="https://hoyo.dotcchix.dev" \
-    CACHE_TTL_SECONDS="1200"
+    CACHE_TTL_SECONDS="1200" \
+    PUBLIC_BASE_URL=""
 
 EXPOSE 8510
 USER app

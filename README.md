@@ -63,6 +63,7 @@ Copy `.env.example` to `.env` (or export the vars):
 | `HOYOLAB_API_BASE` | `https://hoyo.dotcchix.dev` | Hoyolab API root |
 | `ADDR` | `:8080` | HTTP listen address |
 | `CACHE_TTL_SECONDS` | `1200` | Cache TTL for list endpoints (detail is never cached) |
+| `PUBLIC_BASE_URL` | _(request host)_ | Public origin for Discord link previews (`og:url`, buttons); derived from the request when unset |
 
 ## Docker
 
@@ -106,12 +107,28 @@ rendering, and HTTP routes. Golden snapshots for the page and tab routes live in
 
 | Route | Description |
 |---|---|
-| `GET /` | Full page (Detail tab active) |
+| `GET /` | Full page; `?tab=` picks the active tab (`home`, `characters`, `spiral`, `stygian`, `theater`) |
 | `GET /tabs/{tab}` | HTMX tab partial + out-of-band nav (`home`, `characters`, `spiral`, `stygian`, `theater`) |
 | `GET /showcase?element=` | Character grid filter partial |
 | `GET /stygian?cycle=` | Stygian cycle panel partial |
 | `GET /characters/{id}` | Character detail dialog body |
 | `GET /static/` | Fonts, CSS, HTMX, Genshin assets |
+
+## Discord link previews
+
+Sharing the profile URL in Discord renders a custom **component embed** built
+from live data (`discord:component-embed`, documented upstream in
+[discord-api-docs#8606](https://github.com/discord/discord-api-docs/pull/8606)):
+player card, a Mavuika/Varesa/Kirara/Nefer gallery, Stygian/Abyss summaries and
+deep-link buttons. Standard Open Graph tags are emitted as a fallback.
+
+This requires a public HTTPS origin reachable by Discord's crawler
+(`Discordbot/2.0` UA) within its 10s fetch budget. Set `PUBLIC_BASE_URL` to the
+deployed origin so `og:url`, `og:image` and the embed buttons are absolute; it
+falls back to the request host when unset. Previews are cached by Discord for
+about 30 minutes — validate with the
+[Embed Debugger](https://discord.com/developers/embeds) and bust the cache with
+a new query string such as `?v=2`.
 
 ## Notes
 

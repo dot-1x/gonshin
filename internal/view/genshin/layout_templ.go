@@ -8,7 +8,7 @@ package genshin
 import "github.com/a-h/templ"
 import templruntime "github.com/a-h/templ/runtime"
 
-func Layout(content templ.Component) templ.Component {
+func Layout(content templ.Component, embed DiscordEmbed, baseURL string) templ.Component {
 	return templruntime.GeneratedTemplate(func(templ_7745c5c3_Input templruntime.GeneratedComponentInput) (templ_7745c5c3_Err error) {
 		templ_7745c5c3_W, ctx := templ_7745c5c3_Input.Writer, templ_7745c5c3_Input.Context
 		if templ_7745c5c3_CtxErr := ctx.Err(); templ_7745c5c3_CtxErr != nil {
@@ -29,7 +29,47 @@ func Layout(content templ.Component) templ.Component {
 			templ_7745c5c3_Var1 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<!doctype html><html lang=\"en\"><head><meta charset=\"utf-8\"><meta name=\"viewport\" content=\"width=device-width, initial-scale=1\"><title>Genshin Impact Profile — dotcchix</title><meta name=\"description\" content=\"My Genshin Impact player profile, team showcases, and character builds.\"><meta property=\"og:title\" content=\"Genshin Impact Profile — dotcchix\"><meta property=\"og:description\" content=\"My Genshin Impact player profile, team showcases, and character builds.\"><link rel=\"preload\" href=\"/static/fonts/Geist-Variable.woff2\" as=\"font\" type=\"font/woff2\" crossorigin=\"anonymous\"><link rel=\"preload\" href=\"/static/fonts/GeistMono-Variable.woff2\" as=\"font\" type=\"font/woff2\" crossorigin=\"anonymous\"><link rel=\"stylesheet\" href=\"/static/app.css\"><script src=\"/static/htmx.min.js\" defer></script></head><body class=\"antialiased\">")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<!doctype html><html lang=\"en\"><head><meta charset=\"utf-8\"><meta name=\"viewport\" content=\"width=device-width, initial-scale=1\"><title>Genshin Impact Profile — dotcchix</title><meta name=\"description\" content=\"My Genshin Impact player profile, team showcases, and character builds.\"><meta property=\"og:title\" content=\"Genshin Impact Profile — dotcchix\"><meta property=\"og:description\" content=\"My Genshin Impact player profile, team showcases, and character builds.\"><meta property=\"og:type\" content=\"website\"><meta name=\"theme-color\" content=\"#306998\"><meta name=\"twitter:card\" content=\"summary_large_image\">")
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		if baseURL != "" {
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 2, "<meta property=\"og:url\" content=\"")
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+			var templ_7745c5c3_Var2 string
+			templ_7745c5c3_Var2, templ_7745c5c3_Err = templ.ResolveAttributeValue(baseURL + "/")
+			if templ_7745c5c3_Err != nil {
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/view/genshin/layout.templ`, Line: 17, Col: 51}
+			}
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var2)
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 3, "\"><meta property=\"og:image\" content=\"")
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+			var templ_7745c5c3_Var3 string
+			templ_7745c5c3_Var3, templ_7745c5c3_Err = templ.ResolveAttributeValue(baseURL + "/static/genshin/sumeru.png")
+			if templ_7745c5c3_Err != nil {
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/view/genshin/layout.templ`, Line: 18, Col: 78}
+			}
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var3)
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 4, "\"><meta property=\"og:image:width\" content=\"256\"><meta property=\"og:image:height\" content=\"256\">")
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+		}
+		templ_7745c5c3_Err = templ.JSONScript("discord:component-embed", embed).Render(ctx, templ_7745c5c3_Buffer)
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 5, "<link rel=\"preload\" href=\"/static/fonts/Geist-Variable.woff2\" as=\"font\" type=\"font/woff2\" crossorigin=\"anonymous\"><link rel=\"preload\" href=\"/static/fonts/GeistMono-Variable.woff2\" as=\"font\" type=\"font/woff2\" crossorigin=\"anonymous\"><link rel=\"stylesheet\" href=\"/static/app.css\"><script src=\"/static/htmx.min.js\" defer></script></head><body class=\"antialiased\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -37,7 +77,7 @@ func Layout(content templ.Component) templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 2, "<div id=\"gen-dialog\" class=\"hidden\"></div><script>\n\t\t\t\tfunction genOpenDialog() {\n\t\t\t\t\tvar d = document.getElementById(\"gen-dialog\");\n\t\t\t\t\tif (d) d.classList.remove(\"hidden\");\n\t\t\t\t}\n\t\t\t\tfunction genCloseDialog() {\n\t\t\t\t\tvar d = document.getElementById(\"gen-dialog\");\n\t\t\t\t\tif (d) {\n\t\t\t\t\t\td.classList.add(\"hidden\");\n\t\t\t\t\t\td.innerHTML = \"\";\n\t\t\t\t\t}\n\t\t\t\t}\n\t\t\t\tfunction genShowLoading(el) {\n\t\t\t\t\tvar d = document.getElementById(\"gen-dialog\");\n\t\t\t\t\tif (!d) return;\n\t\t\t\t\tvar name = (el && el.getAttribute && el.getAttribute(\"data-name\")) || \"\";\n\t\t\t\t\td.classList.remove(\"hidden\");\n\t\t\t\t\td.innerHTML =\n\t\t\t\t\t\t'<div class=\"flex flex-col items-center justify-center gap-3 px-6 py-16\">' +\n\t\t\t\t\t\t'<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"24\" height=\"24\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\" class=\"h-6 w-6 animate-spin text-primary\" aria-hidden=\"true\"><path d=\"M21 12a9 9 0 1 1-6.219-8.56\"></path></svg>' +\n\t\t\t\t\t\t'<p class=\"font-mono text-xs text-muted-foreground\">Loading ' + name + \"...</p>\" +\n\t\t\t\t\t\t\"</div>\";\n\t\t\t\t}\n\t\t\t\tdocument.addEventListener(\"keydown\", function (e) {\n\t\t\t\t\tif (e.key === \"Escape\") genCloseDialog();\n\t\t\t\t});\n\t\t\t</script></body></html>")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 6, "<div id=\"gen-dialog\" class=\"hidden\"></div><script>\n\t\t\t\tfunction genOpenDialog() {\n\t\t\t\t\tvar d = document.getElementById(\"gen-dialog\");\n\t\t\t\t\tif (d) d.classList.remove(\"hidden\");\n\t\t\t\t}\n\t\t\t\tfunction genCloseDialog() {\n\t\t\t\t\tvar d = document.getElementById(\"gen-dialog\");\n\t\t\t\t\tif (d) {\n\t\t\t\t\t\td.classList.add(\"hidden\");\n\t\t\t\t\t\td.innerHTML = \"\";\n\t\t\t\t\t}\n\t\t\t\t}\n\t\t\t\tfunction genShowLoading(el) {\n\t\t\t\t\tvar d = document.getElementById(\"gen-dialog\");\n\t\t\t\t\tif (!d) return;\n\t\t\t\t\tvar name = (el && el.getAttribute && el.getAttribute(\"data-name\")) || \"\";\n\t\t\t\t\td.classList.remove(\"hidden\");\n\t\t\t\t\td.innerHTML =\n\t\t\t\t\t\t'<div class=\"flex flex-col items-center justify-center gap-3 px-6 py-16\">' +\n\t\t\t\t\t\t'<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"24\" height=\"24\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\" class=\"h-6 w-6 animate-spin text-primary\" aria-hidden=\"true\"><path d=\"M21 12a9 9 0 1 1-6.219-8.56\"></path></svg>' +\n\t\t\t\t\t\t'<p class=\"font-mono text-xs text-muted-foreground\">Loading ' + name + \"...</p>\" +\n\t\t\t\t\t\t\"</div>\";\n\t\t\t\t}\n\t\t\t\tdocument.addEventListener(\"keydown\", function (e) {\n\t\t\t\t\tif (e.key === \"Escape\") genCloseDialog();\n\t\t\t\t});\n\t\t\t</script></body></html>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
